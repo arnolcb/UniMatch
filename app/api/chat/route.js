@@ -52,11 +52,22 @@ export async function POST(req) {
     return new StreamingTextResponse('Lo siento, solo estoy capacitado para ayudar con la elección de universidades y temas educativos.');
   }
 
-  if (userMessage.includes('cuestionario') || userMessage.includes('preguntas')) {
+  if (userMessage.split(' ').length < 5 || userMessage.includes('cuestionario') || userMessage.includes('preguntas')) {
     const questionnaire = await handleQuestionnaire();
     return new StreamingTextResponse(`Aquí tienes algunas preguntas para conocerte mejor: ${questionnaire.join(', ')}`);
   }
 
+  // Analizar el mensaje para recomendar universidad basada en habilidades
+  const skillKeywords = ['ingeniería', 'medicina', 'derecho']; // Añadir más habilidades según sea necesario
+  let recommendedUniversity = null;
+
+  skillKeywords.forEach(skill => {
+    if (userMessage.includes(skill)) {
+      recommendedUniversity = recommendUniversity(skill);
+    }
+  });
+
+  // Crear la respuesta de OpenAI con la recomendación de universidad si aplica
   const response = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
     stream: true,
@@ -64,5 +75,11 @@ export async function POST(req) {
   });
 
   const stream = OpenAIStream(response);
+
+  if (recommendedUniversity) {
+    const universityInfo = `Te recomiendo considerar ${recommendedUniversity.name}. Puedes obtener más información visitando su página: ${recommendedUniversity.url}`;
+    return new StreamingTextResponse(`${stream}\n\n${universityInfo}`);
+  }
+
   return new StreamingTextResponse(stream);
 }

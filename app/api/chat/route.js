@@ -16,10 +16,6 @@ async function handleQuestionnaire() {
     "¿Te interesan más las ciencias exactas o las humanidades?",
     "¿Tienes alguna habilidad técnica o artística que te gustaría desarrollar?"
   ];
-
-  // Aquí podrías procesar las respuestas y orientar las recomendaciones
-  // por ejemplo, almacenarlas y analizarlas para sugerir universidades
-
   return questions;
 }
 
@@ -28,7 +24,7 @@ function recommendUniversity(skill) {
     "ingeniería": { name: "Universidad Nacional de Ingeniería (UNI)", url: "https://www.uni.edu.pe/" },
     "medicina": { name: "Universidad Peruana Cayetano Heredia (UPCH)", url: "https://www.upch.edu.pe/" },
     "derecho": { name: "Pontificia Universidad Católica del Perú (PUCP)", url: "https://www.pucp.edu.pe/" },
-    // Añadir más universidades y links según habilidades
+    //
   };
 
   return universities[skill] || { name: "Universidad no encontrada", url: "" };
@@ -46,7 +42,7 @@ export async function POST(req) {
 
   const userMessage = messages[messages.length - 1].content.toLowerCase();
 
-  const validTopics = ['universidad', 'educación', 'carrera', 'estudios', 'habilidades'];
+  const validTopics = ['hola','universidad', 'educación', 'carrera', 'estudios', 'habilidades'];
 
   if (!validTopics.some(topic => userMessage.includes(topic))) {
     return new StreamingTextResponse('Lo siento, solo estoy capacitado para ayudar con la elección de universidades y temas educativos.');
@@ -58,7 +54,7 @@ export async function POST(req) {
   }
 
   // Analizar el mensaje para recomendar universidad basada en habilidades
-  const skillKeywords = ['ingeniería', 'medicina', 'derecho']; // Añadir más habilidades según sea necesario
+  const skillKeywords = ['ingeniería', 'medicina', 'derecho']; 
   let recommendedUniversity = null;
 
   skillKeywords.forEach(skill => {
